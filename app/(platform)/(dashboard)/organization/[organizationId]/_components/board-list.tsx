@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { db } from "@/lib/db";
 import { getAvailableCount } from "@/lib/org_limit";
 import { MAX_FREE_BOARDS } from "@/constants/boards";
+import { checkSubscription } from "@/lib/subscription";
 
 export async function BoardList() {
   const { orgId } = auth();
@@ -26,6 +27,9 @@ export async function BoardList() {
   });
 
   const avaiableCount = await getAvailableCount();
+  const isPro = await checkSubscription();
+
+  console.log(isPro);
 
   return (
     <div className="space-y-4">
@@ -52,9 +56,11 @@ export async function BoardList() {
             className="aspect-video relative h-full w-full bg-muted rounded-sm flex flex-col gap-y-1 items-center justify-center hover:opacity-75 transition"
           >
             <p className="text-sm">Create new board</p>
-            <span className="text-xs">{`${
-              MAX_FREE_BOARDS - avaiableCount
-            } remaining`}</span>
+            <span className="text-xs">
+              {isPro
+                ? "Unlimited!"
+                : `${MAX_FREE_BOARDS - avaiableCount} remaining`}
+            </span>
             <Hint
               sideOffset={40}
               description={`Free Workspaces can have up to 5 open boeards. for unlimited boards upgrade this workspace`}
